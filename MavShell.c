@@ -85,15 +85,6 @@ int main()
             token_count++;
         }
 
-        // Now print the tokenized input as a debug check
-        // \TODO Remove this code and replace with your shell functionality
-
-        int token_index = 0;
-        for (token_index = 0; token_index < token_count; token_index++)
-        {
-            printf("token[%d] = %s\n", token_index, token[token_index]);
-        }
-
         free(working_root);
 
         if (token[0] == NULL)
@@ -113,6 +104,9 @@ int main()
             exit(0); // quit the program
         }
 
+        //THIS IS WHAT IS NOT WORKING, WHEN I TRY GOING UP THE DIRS
+        //IT GIVES ME SEGMENTATION FAULT AFTER CALLING ANY OTHER COMMAND
+        //EVERYTHING ELSE WORKS FINE
         if (strcmp(token[0], "cd") == 0) // checks if the user has typed cd
         {
             chdir(token[1]); // changes the directory to the one specified by the user
