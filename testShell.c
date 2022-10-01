@@ -1,3 +1,6 @@
+//Akshaj Murhekar
+//1001752757
+
 // The MIT License (MIT)
 //
 // Copyright (c) 2016, 2017, 2020 Trevor Bakker
@@ -54,7 +57,7 @@ int main()
         // This while command will wait here until the user
         // inputs something since fgets returns NULL when there
         // is no input
-        while (!fgets(cmd_str, MAX_COMMAND_SIZE, stdin))
+        while (!fgets(cmd_str, MAX_COMMAND_SIZE, stdin)) //for !n rerun the shell with the same command line
             ;
 
         /* Parse input */
@@ -65,6 +68,7 @@ int main()
         // Pointer to point to the token
         // parsed by strsep
         char *argument_ptr;
+        
 
         char *working_str = strdup(cmd_str);
 
@@ -85,15 +89,15 @@ int main()
             token_count++;
         }
         //reqirements for the program
-        //1 ✅
-        //2 Command not found
-        //4 ✅
-        //5 ✅
-        //6 ✅
-        //7 ✅ 10 CL parameters
-        //8 ✅ Execute any command
-        //9 ✅
-        //10 cd command
+        //1  ✅
+        //2  Command not found
+        //4  ✅
+        //5  ✅
+        //6  ✅
+        //7  ✅ 10 CL parameters
+        //8  ✅ Execute any command
+        //9  ✅
+        //10 ✅ cd command
         //11 listpids command
         //12 history and !n command
 
@@ -105,20 +109,78 @@ int main()
             main();
         }
 
-        // pid_t childPid = fork();
-        // int status;
+        if ((strcmp(token[0], "quit") == 0) || 
+        (strcmp(token[0], "exit") == 0))
+        {
+            remove("history.txt");
+            exit(0); // quit the program
+        }
 
-        // // if (childPid == 0){
-        // //     execl("bin", token[0], token);
-        // //     execl("/usr/local/bin", token[0], token);
-        //     execl("/usr/bin", token[0], token);
-        // //     //exit after exec
-        // //     exit(0);
-        // // }
-        // // waitpid(childPid, &status, 0);
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            //convert token[0] to char*
+            char *command = token[0];
+            char *dir = "/bin/";
+            //concatenate dir and command
+            char *path; //create the char to store the path
+            //we need to allocate memory for the path variable
+            //we allocate certian amount of memory by adding the 
+            //length of the dir and command
+            //add 1 to the length of the dir and command to 
+            //account for the null terminator
+            path = malloc(strlen(dir) + strlen(command) + 1);
+            //now that we have allocated memory for the path variable we can concatenate the dir and command
+            //we copy the contents of the dir first to path
+            strcpy(path, dir); //this copies the dir to path
+            //we then join the command to the end of the path
+            strcat(path, command); //this joins the dir and command to essentially make
+                                   //the correct PATH (eg:"/bin/ls") ^^
+            //run the command
+            execvp(path, token); //execvp then executes the token in the path specified.
+        }
+        //wait for child process to finish
+        {
+            wait(NULL);
+        }
+        if (pid == 0)
+        {
+            // array of pointers to char
+            //convert token[0] to char*
+            char *command = token[0];
+            char *dir = "/usr/bin/";
+            //concatenate dir and command
+            char *path = malloc(strlen(dir) + strlen(command) + 1);
+            strcpy(path, dir);
+            strcat(path, command);
+            //run the command
+            execvp(path, token);
+        }
+        //
+        {
+            wait(NULL);
+        }
+        if (pid == 0)
+        {
+            // array of pointers to char
+            //convert token[0] to char*
+            char *command = token[0];
+            char *dir = "/usr/local/bin/";
+            //concatenate dir and command
+            char *path;
+            path = malloc(strlen(dir) + strlen(command) + 1);
+            strcpy(path, dir);
+            strcat(path, command);
+            //run the command
+            execvp(path, token);
+        }
+        //
+        {
+            wait(NULL);
+        }
 
         FILE *fp;
-        fp = fopen("history.txt", "a");
+        fp = fopen("/history.txt", "a");
         fprintf(fp, "%s", cmd_str); // this will print every line typed to a text file to be read later.
         fclose(fp);
 
@@ -130,22 +192,27 @@ int main()
             exit(0); // quit the program
         }
 
-        if ((strcmp(token[0], "ls") == 0) || 
-        (strcmp(token[0], "ps") == 0) || 
-        (strcmp(token[0], "pwd") == 0))
+        // if the user types cd, then change the directory
+        if (strcmp(token[0], "cd") == 0)
         {
-            // chdir(token[1]); //change directory to the one specified by the user
-            pid_t pid = fork();
-            if (pid == 0)
-            {
-                // make array of arguments that are taken from token array
-                execvp(token[0], token);
-            }
-            else
-            {
-                wait(NULL);
-            }
+            chdir(token[1]);
         }
+
+        // if ((strcmp(token[0], "ls") == 0) || 
+        // (strcmp(token[0], "ps") == 0))
+        // {
+        //     // chdir(token[1]); //change directory to the one specified by the user
+        //     pid_t pid = fork();
+        //     if (pid == 0)
+        //     {
+        //         // make array of arguments that are taken from token array
+        //         execvp(token[0], token);
+        //     }
+        //     else
+        //     {
+        //         wait(NULL);
+        //     }
+        // }
         
 
         free(working_root);
