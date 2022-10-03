@@ -288,3 +288,16 @@ gcc MavShell.c
 gcc MavShell.c 
 ./a.out 
 exit
+ls
+gcc testShell.c 
+./a.out 
+git status
+git add .
+git status
+git branch
+git commit -m "commited with my shell"
+top
+gcc testShell.c 
+./a.out 
+./a.out 
+exit
