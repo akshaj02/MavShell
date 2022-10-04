@@ -115,106 +115,95 @@ int main()
         if (strcmp(token[0], "exit") == 0)
         {
             free(working_root);
-
             exit(0);
+        }
+
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            // convert token[0] to char*
+            char *command = token[0];
+            char *dir = "usr/local/bin/";
+            // concatenate dir and command
+            char *path; // create the char to store the path
+            // we need to allocate memory for the path variable
+            // we allocate certian amount of memory by adding the
+            // length of the dir and command
+            // add 1 to the length of the dir and command to
+            // account for the null terminator
+            path = (char *)(malloc(strlen(dir) + strlen(command) + 1));
+            // now that we have allocated memory for the path variable we can concatenate the dir and command
+            // we copy the contents of the dir first to path
+            strcpy(path, dir); // this copies the dir to path
+            // we then join the command to the end of the path
+            strcat(path, command); // this joins the dir and command to essentially make
+                                   // the correct PATH (eg:"/bin/ls") ^^
+                                   // run the command
+                                   // if the command is not found then the execvp will return -1
+                                   // if the command is found then the execvp will return 0
+            execvp(path, token);
+            found = 1;
+            // execvp then executes the token in the path specified.
         }
         else
         {
-
-            pid_t pid = fork();
-            if (pid == 0)
-            {
-                // convert token[0] to char*
-                char *command = token[0];
-                char *dir = "usr/local/bin/";
-                // concatenate dir and command
-                char *path; // create the char to store the path
-                // we need to allocate memory for the path variable
-                // we allocate certian amount of memory by adding the
-                // length of the dir and command
-                // add 1 to the length of the dir and command to
-                // account for the null terminator
-                path = (char *)(malloc(strlen(dir) + strlen(command) + 1));
-                // now that we have allocated memory for the path variable we can concatenate the dir and command
-                // we copy the contents of the dir first to path
-                strcpy(path, dir); // this copies the dir to path
-                // we then join the command to the end of the path
-                strcat(path, command); // this joins the dir and command to essentially make
-                                       // the correct PATH (eg:"/bin/ls") ^^
-                                       // run the command
-                                       // if the command is not found then the execvp will return -1
-                                       // if the command is found then the execvp will return 0
-                execvp(path, token);
-                found = 1;
-                // execvp then executes the token in the path specified.
-            }
-            // wait for child process to finish
-            {
-                wait(NULL);
-            }
-
-            if (pid == 0)
-            {
-                // array of pointers to char
-                // convert token[0] to char*
-                char *command = token[0];
-                char *dir = "/usr/bin/";
-                // concatenate dir and command
-                char *path = malloc(strlen(dir) + strlen(command) + 1);
-                strcpy(path, dir);
-                strcat(path, command);
-                // run the command
-                found = 0;
-                execvp(path, token);
-                found = 1;
-            }
-            else
-            {
-                wait(NULL);
-            }
-            // free the allocated memor
-            // printf("Command not found   ");
-
-            if (pid == 0)
-            {
-                // array of pointers to char
-                // convert token[0] to char*
-                char *command = token[0];
-                char *dir = "/bin/";
-                // concatenate dir and command
-                char *path = malloc(strlen(dir) + strlen(command) + 1);
-                strcpy(path, dir);
-                strcat(path, command);
-                // run the command
-                found = 0;
-                execvp(path, token);
-                found = 1;
-            }
-            else
-            {
-                wait(NULL);
-            }
-            if (strcmp(token[0], "cd") == 0)
-            {
-                chdir(token[1]);
-                found = 0;
-            }
-            if (found == 1)
-            {
-                printf("%s: Command not found.\n", token[0]);
-            }
+            wait(NULL);
         }
 
-        // if (strcmp(token[0], "exit") == 0)
-        // {
-        //     // free the allocated memory
-        //     free(working_root);
-        //     printf("bruh");
-        //     found = 0;
-        //     printf("bruh2");
-        //     // printf("Exiting the shell   ");
-        //     exit(0);
-        // }
+        if (pid == 0)
+        {
+            // array of pointers to char
+            // convert token[0] to char*
+            char *command = token[0];
+            char *dir = "/usr/bin/";
+            // concatenate dir and command
+            char *path = malloc(strlen(dir) + strlen(command) + 1);
+            strcpy(path, dir);
+            strcat(path, command);
+            // run the command
+            found = 0;
+            execvp(path, token);
+            found = 1;
+        }
+        else
+        {
+            wait(NULL);
+        }
+        // free the allocated memor
+        // printf("Command not found   ");
+
+        if (pid == 0)
+        {
+            // array of pointers to char
+            // convert token[0] to char*
+            char *command = token[0];
+            char *dir = "/bin/";
+            // concatenate dir and command
+            char *path = malloc(strlen(dir) + strlen(command) + 1);
+            strcpy(path, dir);
+            strcat(path, command);
+            // run the command
+            found = 0;
+            execvp(path, token);
+            found = 1;
+        }
+        else
+        {
+            wait(NULL);
+        }
+
+        if (strcmp(token[0], "cd") == 0)
+        {
+            chdir(token[1]);
+            found = 0;
+        }
+
+        if (found == 1)
+        {
+            printf("%s: Command not found.\n", token[0]);
+            exit(0);
+        }
+
     }
     return 0;
 }
