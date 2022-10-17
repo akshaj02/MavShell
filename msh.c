@@ -1,5 +1,5 @@
-// Ak
-// 1001
+// Akshaj Murhekar
+// 1001752757
 
 // The MIT License (MIT)
 //
@@ -248,7 +248,7 @@ int main()
             //
         }
 
-        else if (token[0][0] == '!')
+        else if (cmd_str[0] == '!')
         {
             pid_t pid = fork(); // fork the process becuase we are going to run a command
 
@@ -270,7 +270,7 @@ int main()
                 // we are going to open the history file and read the line number and the command
                 // we will then tokenize the command and run it with execvp
                 // get the number from the command
-                int number = atoi(&token[0][1]);
+                int number = atoi(&cmd_str[1]);
 
                 // open the file
                 FILE *ptr;
@@ -303,9 +303,9 @@ int main()
 
                 // if the number is greater than the length of the array
                 // then print an error
-                if (number > length)
+                if (number > length-1)
                 {
-                    printf("Error: Command not found\n");
+                    printf("Command not in history.\n");
                     exit(0);
                 }
                 else
